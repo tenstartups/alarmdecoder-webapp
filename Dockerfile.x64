@@ -1,0 +1,80 @@
+#
+# AlarmDecoder web application
+#
+# http://github.com/tenstartups/alarmdecoder-webapp
+#
+
+FROM tenstartups/alpine:latest
+
+MAINTAINER Marc Lennox <marc.lennox@gmail.com>
+
+# Set environment variables.
+ENV \
+  PAGER=more \
+  PIP_NO_CACHE_DIR=off \
+  PIP_DISABLE_PIP_VERSION_CHECK=on
+
+# Install packages.
+RUN \
+  apk --update add \
+    bsd-compat-headers \
+    build-base \
+    curl-dev \
+    dosfstools \
+    git \
+    libffi-dev \
+    libxml2-dev \
+    libxslt-dev \
+    linux-headers \
+    openssl-dev \
+    pcre-dev \
+    python \
+    python-dev \
+    py2-pip \
+    sqlite \
+    sudo \
+    zlib-dev && \
+  rm -rf /var/cache/apk/*
+
+# Install python packages
+RUN \
+  pip install gunicorn --upgrade
+
+# Create the required user
+RUN \
+  addgroup alarmdecoder && \
+  adduser -D -s /bin/bash alarmdecoder -G alarmdecoder
+
+# Set the working directory
+WORKDIR /opt/alarmdecoder-webapp
+
+# Install the alarmdecoder web application
+RUN \
+ git clone https://github.com/nutechsoftware/alarmdecoder-webapp.git . && \
+ pip install -r requirements.txt && \
+ mkdir instance && \
+ chown -R alarmdecoder:alarmdecoder .
+
+# Initialize the application database
+RUN \
+  su alarmdecoder -c 'python manage.py initdb'
+
+# Add files to the container.
+COPY entrypoint.sh /docker-entrypoint
+
+# Set the entrypoint script.
+ENTRYPOINT ["/docker-entrypoint"]
+
+# Create data volume
+VOLUME /opt/alarmdecoder-webapp/instance
+
+# I'm not sure what's going on here, but the app starts its own server on port
+# 5000, and that's the server that it wants exposed to the outside world. So we
+# start gunicorn on port 8000, but that server is ignored and the code spins up
+# the actual server that we expose.
+#
+# This port 5000 also seems to be hard-coded in a few different places in the app.
+EXPOSE 5000
+
+# Set the default command.
+CMD ["gunicorn", "-u", "alarmdecoder", "-g", "alarmdecoder", "-b", "0.0.0.0:8000", "wsgi:application"]
