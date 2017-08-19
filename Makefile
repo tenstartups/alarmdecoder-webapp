@@ -13,11 +13,12 @@ clean_build: Dockerfile.$(DOCKER_ARCH)
 
 run: build
 	docker run -it --rm \
-	-p 5000:5000 \
-	-v /etc/localtime:/etc/localtime \
-	-e VIRTUAL_HOST=alarm-decoder.docker \
-	--name alarm-decoder \
-	$(DOCKER_IMAGE_NAME) $(ARGS)
+		-v /etc/localtime:/etc/localtime \
+		-e AD_LISTENER_PORT=8080 \
+		-e VIRTUAL_HOST=alarmdecoder.docker \
+		-e VIRTUAL_PORT=8080 \
+		--name alarmdecoder \
+		$(DOCKER_IMAGE_NAME) $(ARGS)
 
 push: build
 	docker push $(DOCKER_IMAGE_NAME)
