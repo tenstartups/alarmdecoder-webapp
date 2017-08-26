@@ -43,7 +43,7 @@ RUN \
 # Create the required user.
 RUN \
   addgroup alarmdecoder && \
-  adduser -D -s /bin/bash alarmdecoder -G alarmdecoder
+  adduser -D -s /bin/sh alarmdecoder -G alarmdecoder
 
 # Set the working directory.
 WORKDIR /opt/alarmdecoder-webapp
