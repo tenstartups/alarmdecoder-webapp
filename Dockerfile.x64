@@ -4,7 +4,7 @@
 # http://github.com/tenstartups/alarmdecoder-webapp
 #
 
-FROM tenstartups/alpine:latest
+FROM alpine:latest
 
 MAINTAINER Marc Lennox <marc.lennox@gmail.com>
 
