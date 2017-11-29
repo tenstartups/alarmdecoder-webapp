@@ -6,7 +6,7 @@
 
 FROM resin/armhf-alpine:latest
 
-MAINTAINER Marc Lennox <marc.lennox@gmail.com>
+LABEL maintainer="Marc Lennox <marc.lennox@gmail.com>"
 
 # Set environment variables.
 ENV \
@@ -52,6 +52,7 @@ WORKDIR /opt/alarmdecoder-webapp
 RUN \
   git clone https://github.com/marclennox/alarmdecoder-webapp.git . && \
   pip install -r requirements.txt && \
+  git+https://github.com/nutechsoftware/alarmdecoder.git@master && \
   mkdir instance && \
   chown -R alarmdecoder:alarmdecoder .
 
