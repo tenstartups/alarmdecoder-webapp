@@ -12,7 +12,8 @@ LABEL maintainer="Marc Lennox <marc.lennox@gmail.com>"
 ENV \
   PAGER=more \
   PIP_NO_CACHE_DIR=off \
-  PIP_DISABLE_PIP_VERSION_CHECK=on
+  PIP_DISABLE_PIP_VERSION_CHECK=on \
+  TERM=xterm-color
 
 # Install packages.
 RUN \
